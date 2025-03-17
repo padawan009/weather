@@ -9,8 +9,8 @@ const temperature = document.querySelector('.temperature');
 const feelsLike = document.querySelector('.feelslike');
 const windKph = document.querySelector('.wind-kph');
 const airHumidity = document.querySelector('.humidity');
+const changeDegreeBtn = document.querySelector('.change-degree')
 const degreeSign = '\u00B0';
-
 let cityName = '';
 
 searchBtn.addEventListener('click', async (event) => {
@@ -39,7 +39,7 @@ async function getWeather() {
     }
 
     const weatherData = await response.json();
-    weatherForm.style.cssText = 'transform: translate(700px, -400px) scale(0.7); transition: all 1.ease-out;';
+    weatherForm.style.cssText = 'transform: translate(700px, -400px) scale(0.7); background-image: none; background-color: rgb(195, 196, 196); transition: all 1.8s ease-out;';
 
     const {
       location: { name, country },
@@ -47,7 +47,7 @@ async function getWeather() {
     } = weatherData;
 
     updateBackgroundVideo(is_day);
-
+    
     city.textContent = `${name}, ${country}`;
     weatherCondition.textContent = condition.text;
     temperature.textContent = `${temp_f} ${degreeSign}F`;
@@ -55,11 +55,23 @@ async function getWeather() {
     windKph.textContent = `Wind: ${wind_kph} kph`;
     airHumidity.textContent = `Humidity: ${humidity}%`;
 
+    let isFahrenheit = true;
+    changeDegreeBtn.textContent = '°C';
+    
+    changeDegreeBtn.onclick = () => {
+      if (isFahrenheit) {
+        temperature.textContent = `${temp_c} ${degreeSign}C`;
+        feelsLike.textContent = `Feels like: ${feelslike_c} ${degreeSign}C`;
+        changeDegreeBtn.textContent = '°F';
+      } else {
+        temperature.textContent = `${temp_f} ${degreeSign}F`;
+        feelsLike.textContent = `Feels like: ${feelslike_f} ${degreeSign}F`;
+        changeDegreeBtn.textContent = '°C';
+      }
+      isFahrenheit = !isFahrenheit;
+    };
 
-
-    console.log(is_day)
-    console.log(humidity)
-    console.log(weatherData);
+    // console.log(is_day)
     // console.log(weatherData.current.temp_f);
     // console.log(weatherData.current.feelslike_f);
     // console.log(weatherData.current.humidity);
@@ -95,21 +107,21 @@ function updateBackgroundVideo(is_day) {
   bodyVideo.autoplay = true;
   bodyVideo.muted = true;
   bodyVideo.loop = true;
-  // bodyVideo.style.borderRadius = '0px'
 
   if (is_day) {
     video.src = './assets/0_Sunset_Clouds_1280x720.mp4';
     bodyVideo.src = './assets/0_Sunset_Clouds_1280x720.mp4';
-    bodyVideo.style.opacity = '0.4';
+    bodyVideo.style.opacity = '0.6';
     
   }
   else {
     video.src = './assets/0_Night Sky_Stars_1280x720.mp4';
     bodyVideo.src = './assets/0_Night Sky_Stars_1280x720.mp4';
-    bodyVideo.style.opacity = '0.7';
+    bodyVideo.style.opacity = '0.8';
 
   }
 
   weatherResultBlock.prepend(video); 
   document.body.appendChild(bodyVideo);
 }
+
