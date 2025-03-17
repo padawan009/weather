@@ -76,6 +76,7 @@ input::placeholder {
     justify-content: space-between;
     width: 700px;
     padding: 30px;
+    padding-top: 20px;
     position: absolute;
     top: 35%;
     left: 33%;
@@ -116,7 +117,7 @@ input::placeholder {
 }
 
 .weather-result__condition {
-    align-self: center;
+    align-self: flex-end;
 }
 
 .weather-result__city {
