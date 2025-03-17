@@ -12,6 +12,7 @@ const airHumidity = document.querySelector('.humidity');
 const changeDegreeBtn = document.querySelector('.change-degree')
 const degreeSign = '\u00B0';
 let cityName = '';
+let isFahrenheit = true;
 
 searchBtn.addEventListener('click', async (event) => {
   event.preventDefault();
@@ -54,21 +55,12 @@ async function getWeather() {
     feelsLike.textContent = `Feels like: ${feelslike_f} ${degreeSign}F`;
     windKph.textContent = `Wind: ${wind_kph} kph`;
     airHumidity.textContent = `Humidity: ${humidity}%`;
-
-    let isFahrenheit = true;
-    changeDegreeBtn.textContent = '°C';
     
+    weatherResultBlock.style.display = 'block';
+
+    changeDegreeBtn.textContent = `${degreeSign}C`;
     changeDegreeBtn.onclick = () => {
-      if (isFahrenheit) {
-        temperature.textContent = `${temp_c} ${degreeSign}C`;
-        feelsLike.textContent = `Feels like: ${feelslike_c} ${degreeSign}C`;
-        changeDegreeBtn.textContent = '°F';
-      } else {
-        temperature.textContent = `${temp_f} ${degreeSign}F`;
-        feelsLike.textContent = `Feels like: ${feelslike_f} ${degreeSign}F`;
-        changeDegreeBtn.textContent = '°C';
-      }
-      isFahrenheit = !isFahrenheit;
+      updateDegree(temp_c, temp_f, feelslike_c, feelslike_f);
     };
 
     // console.log(is_day)
@@ -78,50 +70,66 @@ async function getWeather() {
     // console.log(weatherData.current.wind_kph);
     // console.log(weatherData.current.condition.text);
 
-    weatherResultBlock.style.display = 'block';
-
   } catch (error) {
     alert(`${error}. Try again later.`)
   }
 }
 
+function updateDegree(temp_c, temp_f, feelslike_c, feelslike_f) {
+  if (isFahrenheit) {
+    temperature.textContent = `${temp_c} ${degreeSign}C`;
+    feelsLike.textContent = `Feels like: ${feelslike_c} ${degreeSign}C`;
+    changeDegreeBtn.textContent = `${degreeSign}F`;
+  } else {
+    temperature.textContent = `${temp_f} ${degreeSign}F`;
+    feelsLike.textContent = `Feels like: ${feelslike_f} ${degreeSign}F`;
+    changeDegreeBtn.textContent = `${degreeSign}C`;
+  }
+  isFahrenheit = !isFahrenheit;
+}
+
 function updateBackgroundVideo(is_day) {
-  const currentVideo = document.querySelector('.weather-video');
-  const currentBodyVideo = document.querySelector('.weather-video-body')
+  let currentVideo = document.querySelector('.weather-video');
+  let currentBodyVideo = document.querySelector('.weather-video-body')
 
-  if(currentVideo) {
-    currentVideo.remove();
-  }
-  if (currentBodyVideo) {
-    currentBodyVideo.remove();
-  }
+  const videoDaySrc = './assets/0_Sunset_Clouds_1280x720.mp4';
+  const videoNightSrc = './assets/0_Night Sky_Stars_1280x720.mp4';
 
-  const video = document.createElement('video');
-  video.classList.add('weather-video');
-  video.autoplay = true;
-  video.muted = true;
-  video.loop = true;
+  const videoSrc = is_day ? videoDaySrc : videoNightSrc;
+  const videoOpacity = is_day ? '0.6' : '0.8';
 
-  const bodyVideo = document.createElement('video');
-  bodyVideo.classList.add('weather-video-body')
-  bodyVideo.autoplay = true;
-  bodyVideo.muted = true;
-  bodyVideo.loop = true;
-
-  if (is_day) {
-    video.src = './assets/0_Sunset_Clouds_1280x720.mp4';
-    bodyVideo.src = './assets/0_Sunset_Clouds_1280x720.mp4';
-    bodyVideo.style.opacity = '0.6';
-    
+  if (!currentVideo) {
+    currentVideo = document.createElement('video');
+    currentVideo.classList.add('weather-video');
+    currentVideo.autoplay = true;
+    currentVideo.muted = true;
+    currentVideo.loop = true;
+    currentVideo.src = videoSrc;
+    currentVideo.style.opacity = videoOpacity;
+    weatherResultBlock.prepend(currentVideo); 
   }
   else {
-    video.src = './assets/0_Night Sky_Stars_1280x720.mp4';
-    bodyVideo.src = './assets/0_Night Sky_Stars_1280x720.mp4';
-    bodyVideo.style.opacity = '0.8';
-
+    if (currentVideo.src !== videoSrc) {
+      currentVideo.src = videoSrc;
+      currentVideo.style.opacity = videoOpacity;
+    }
   }
 
-  weatherResultBlock.prepend(video); 
-  document.body.appendChild(bodyVideo);
+  if(!currentBodyVideo) {
+    currentBodyVideo = document.createElement('video');
+    currentBodyVideo.classList.add('weather-video-body')
+    currentBodyVideo.autoplay = true;
+    currentBodyVideo.muted = true;
+    currentBodyVideo.loop = true;
+    currentBodyVideo.src = videoSrc;
+    currentBodyVideo.style.opacity = videoOpacity;
+    document.body.appendChild(currentBodyVideo);
+  }
+  else {
+    if (currentBodyVideo.src !== videoSrc) {
+      currentBodyVideo.src = videoSrc;
+      currentBodyVideo.style.opacity = videoOpacity;
+    }
+  }
 }
 
